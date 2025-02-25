@@ -48,7 +48,10 @@ import matplotlib.colors as mcolors
 css4_colors = mcolors.CSS4_COLORS
 color_proposals = [list(mcolors.hex2color(color)) for color in css4_colors.values()]
 
-client = OpenAI()
+api_key = 'sk-bUOERA2G8jm7PRnAEcF94bD0E7E5428e9f661dE28eB9716c'  # new
+api_base = 'https://api.pumpkinaigc.online/v1'
+client = OpenAI(base_url=api_base,
+                api_key=api_key)
 
 '''
 build args
