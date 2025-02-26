@@ -31,15 +31,7 @@ color_proposals = [list(mcolors.hex2color(color)) for color in css4_colors.value
 
 import os
 
-
-api_key = 'sk-bUOERA2G8jm7PRnAEcF94bD0E7E5428e9f661dE28eB9716c'  # new
-api_base = 'https://api.pumpkinaigc.online/v1'
-client = OpenAI(base_url=api_base,
-                api_key=api_key)
-
-os.environ["OPENAI_API_KEY"] = api_key
-os.environ["OPENAI_API_BASE"] = api_base
-
+client = OpenAI()
 
 '''
 build args
