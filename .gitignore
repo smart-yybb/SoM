@@ -1,7 +1,9 @@
-*.pth*
-*.pt*
+.gradio/
+sam_vit_h_4b8939.pth
+seem_focall_v1.pt
+swinl_only_sam_many2many.pth
+videos/
 *-log*
-/videos
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
