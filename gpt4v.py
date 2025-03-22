@@ -5,6 +5,7 @@ from io import BytesIO
 
 # Get OpenAI API Key from environment variable
 api_key = os.environ["OPENAI_API_KEY"]
+api_host = os.environ["OPENAI_API_BASE"]
 headers = {
     "Content-Type": "application/json",
     "Authorization": f"Bearer {api_key}"
@@ -33,7 +34,7 @@ def prepare_inputs(message, image):
     base64_image = encode_image_from_pil(image)
 
     payload = {
-        "model": "gpt-4-vision-preview",
+        "model": "gpt-4-turbo",
         "messages": [
         {
             "role": "system",
@@ -64,6 +65,7 @@ def prepare_inputs(message, image):
 
 def request_gpt4v(message, image):
     payload = prepare_inputs(message, image)
-    response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
+    response = requests.post(f"{api_host}/chat/completions", headers=headers, json=payload)
+    print(f"gpt response: {response}\n")
     res = response.json()['choices'][0]['message']['content']
     return res

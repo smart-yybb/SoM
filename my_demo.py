@@ -16,6 +16,7 @@ from segment_anything import sam_model_registry
 from task_adapter.sam.tasks.inference_sam_m2m_auto import inference_sam_m2m_auto
 from task_adapter.sam.tasks.inference_sam_m2m_interactive import inference_sam_m2m_interactive
 
+
 metadata = MetadataCatalog.get('coco_2017_train_panoptic')
 
 from scipy.ndimage import label
@@ -30,6 +31,15 @@ css4_colors = mcolors.CSS4_COLORS
 color_proposals = [list(mcolors.hex2color(color)) for color in css4_colors.values()]
 
 import os
+from datetime import datetime
+import logging
+
+# init log
+start_timestamp = datetime.fromtimestamp(datetime.now().timestamp()).strftime('%Y-%m-%d-%H-%M-%S')
+log_path = f"./{start_timestamp}.log"
+log_format = '[%(levelname)s] %(asctime)s - %(message)s'
+log_level = logging.INFO
+logging.basicConfig(level=log_level, format=log_format, filename=log_path, filemode='w')
 
 client = OpenAI()
 
@@ -50,10 +60,10 @@ history_texts = []
 
 @torch.no_grad()
 def inference(image, slider, mode, alpha, label_mode, anno_mode, *args, **kwargs):
-    global history_images;
-    history_images = []
-    global history_masks;
-    history_masks = []
+    # global history_images;
+    # history_images = []
+    # global history_masks;
+    # history_masks = []
 
     _image = image['background'].convert('RGB')
     _mask = image['layers'][0].convert('L') if image['layers'] else None
@@ -93,10 +103,15 @@ def gpt4v_response(message, history):
     global history_texts;
     history_texts = []
     try:
+        if len(history_images) == 0:
+            return "请先上传图片并且运行"
+        logging.info(f"gpt4v_response msg:{message}\n")
         res = request_gpt4v(message, history_images[0])
+        logging.info(f"gpt4v_response res:{res}\n")
         history_texts.append(res)
         return res
     except Exception as e:
+        logging.error(e)
         return None
 
 
@@ -166,4 +181,4 @@ with demo:
     highlightBtn.click(highlight, inputs=[image, mode, slider_alpha, label_mode, anno_mode],
                        outputs=image_out)
 
-demo.queue().launch(share=True, server_port=6092)
+demo.queue().launch(share=True, server_port=6093)

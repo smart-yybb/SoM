@@ -4,6 +4,7 @@ seem_focall_v1.pt
 swinl_only_sam_many2many.pth
 videos/
 *-log*
+.idea/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
