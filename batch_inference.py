@@ -59,7 +59,11 @@ if __name__ == "__main__":
     alpha = 0.05
     label_mode = "1"
     anno = "Mark"
+    print(f"Start to infer {len(image_paths)} images...\n")
+    count = 0
     for image_path in image_paths:
+        count += 1
+        print(f"Handling the {count}th image\n")
         img = Image.open(image_path)
         (output, _) = inference(img, alpha, label_mode, anno)
         im_pil = Image.fromarray(output)  # 转换为 PIL 格式
