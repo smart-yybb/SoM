@@ -5,6 +5,8 @@ swinl_only_sam_many2many.pth
 videos/
 *-log*
 .idea/
+inputs
+outputs
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

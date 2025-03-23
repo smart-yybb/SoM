@@ -16,7 +16,6 @@ from segment_anything import sam_model_registry
 from task_adapter.sam.tasks.inference_sam_m2m_auto import inference_sam_m2m_auto
 from task_adapter.sam.tasks.inference_sam_m2m_interactive import inference_sam_m2m_interactive
 
-
 metadata = MetadataCatalog.get('coco_2017_train_panoptic')
 
 from scipy.ndimage import label
@@ -59,16 +58,14 @@ history_texts = []
 
 
 @torch.no_grad()
-def inference(image, slider, mode, alpha, label_mode, anno_mode, *args, **kwargs):
-    # global history_images;
-    # history_images = []
-    # global history_masks;
-    # history_masks = []
+def inference(image, alpha, label_mode, anno_mode):
+    global history_images;
+    history_images = []
+    global history_masks;
+    history_masks = []
 
     _image = image['background'].convert('RGB')
     _mask = image['layers'][0].convert('L') if image['layers'] else None
-
-    model_name = 'sam'
 
     if label_mode == 'Alphabet':
         label_mode = 'a'
@@ -76,22 +73,8 @@ def inference(image, slider, mode, alpha, label_mode, anno_mode, *args, **kwargs
         label_mode = '1'
 
     text_size, hole_scale, island_scale = 640, 100, 100
-    text, text_part, text_thresh = '', '', '0.0'
     with torch.autocast(device_type='cuda', dtype=torch.float16):
-        semantic = False
-
-        if mode == "Interactive":
-            labeled_array, num_features = label(np.asarray(_mask))
-            spatial_masks = torch.stack([torch.from_numpy(labeled_array == i + 1) for i in range(num_features)])
-
-        elif model_name == 'sam':
-            model = model_sam
-            if mode == "Automatic":
-                output, mask = inference_sam_m2m_auto(model, _image, text_size, label_mode, alpha, anno_mode)
-            elif mode == "Interactive":
-                output, mask = inference_sam_m2m_interactive(model, _image, spatial_masks, text_size, label_mode, alpha,
-                                                             anno_mode)
-
+        output, mask = inference_sam_m2m_auto(model_sam, _image, text_size, label_mode, alpha, anno_mode)
         # convert output to PIL image
         history_masks.append(mask)
         history_images.append(Image.fromarray(output))
@@ -176,7 +159,7 @@ with demo:
     with gr.Row():
         gr.ChatInterface(chatbot=bot, fn=gpt4v_response)
 
-    runBtn.click(inference, inputs=[image, slider, mode, slider_alpha, label_mode, anno_mode],
+    runBtn.click(inference, inputs=[image, slider_alpha, label_mode, anno_mode],
                  outputs=image_out)
     highlightBtn.click(highlight, inputs=[image, mode, slider_alpha, label_mode, anno_mode],
                        outputs=image_out)
